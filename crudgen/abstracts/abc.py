@@ -206,6 +206,8 @@ class AbstractBaseApp(AbstractBaseCommon, ABC):
         return self.__models[name]
 
     def register_model(self, model):
+        if model.name in self.__models.keys():
+            raise ValueError(f"duplicate model in app: {self.name}, model: {model.name}")
         model.app = self
         self.__models[model.name] = model
 
