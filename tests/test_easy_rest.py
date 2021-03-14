@@ -1,4 +1,4 @@
-from easy_rest import __version__
+from crudgen import __version__
 
 
 def test_version():

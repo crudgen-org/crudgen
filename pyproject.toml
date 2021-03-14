@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "easy-rest"
+name = "crudgen"
 version = "0.1.0"
-description = ""
+description = "a minimal CRUD code generator"
 authors = ["pouria <pooriazmn@gmail.com>"]
 
 [tool.poetry.dependencies]
