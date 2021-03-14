@@ -252,7 +252,8 @@ class AbstractBaseService(AbstractBaseCommon, ABC):
                 self.register_app(app)
 
     def register_app(self, app):
-        # TODO: we should validate that there is no duplicate app names at 2020-10-25 by pooria
+        if app.name in self.__apps.keys():
+            raise KeyError(f"duplicate app name: {app.name}")
         app.service = self
         self.__apps[app.name] = app
 
