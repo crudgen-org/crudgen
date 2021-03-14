@@ -1,0 +1,161 @@
+{
+  "schema": "easy_rest",
+  "version": "0.1.0",
+  "deploy_strategy": {
+    "hostname": "*",
+    "port": 8080
+  },
+  "name": "SimpleTest",
+  "apps": [
+    {
+      "name": "folan",
+      "namespace": "folan/",
+      "models": [
+        {
+          "name": "MyFirstModel",
+          "fields": [
+            {
+              "name": "second",
+              "field_type": "ForeignKey",
+              "target": "folan.MySecondModel",
+              "related_name": "firsts"
+            },
+            {
+              "name": "col1",
+              "field_type": "CharField",
+              "max_length": 30
+            },
+            {
+              "name": "col2",
+              "field_type": "CharField",
+              "max_length": 20
+            }
+          ],
+          "serializers": [
+            {
+              "name": "MyFirstModelSerializer",
+              "fields": ["col1", "col2", "id"]
+            },
+            {
+              "name": "FirstModelRelationsSerializer",
+              "fields": ["col1", "col2", "second_rep", "second", "id"],
+              "extras": {
+                "second": {
+                  "write_only": true
+                },
+                "second_rep": {
+                  "source": "second",
+                  "serializer": "MySecondModelSerializer"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "MySecondModel",
+          "fields": [
+            {
+              "name": "bahman",
+              "field_type": "CharField",
+              "max_length": 30
+            }
+          ],
+          "serializers": [
+            {
+              "name": "MySecondModelSerializer",
+              "fields": ["bahman", "id"]
+            },
+            {
+              "name": "MySecondSerializerRelations",
+              "fields": ["bahman", "id", "firsts"],
+              "extras": {
+                "firsts": {
+                  "serializer": "MyFirstModelSerializer"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "TheThird",
+          "fields": [
+            {
+              "name": "second_set",
+              "field_type": "ManyToMany",
+              "target": "folan.MySecondModel",
+              "related_name": "third_set"
+            },
+            {
+              "name": "data",
+              "field_type": "CharField",
+              "max_length": 10
+            }
+          ],
+          "serializers": [
+            {
+              "name": "TheThirdSerializer",
+              "fields": ["data", "second_set"],
+              "extras": {
+                "second_set": {
+                  "serializer": "MySecondSerializerRelations"
+                }
+              }
+            },
+            {
+              "name": "ThirdSerializer",
+              "fields": ["data", "second_set"]
+            }
+          ]
+        }
+      ],
+      "endpoints": [
+        {
+          "endpoint_type": "simple_data_access",
+          "model": "MyFirstModel",
+          "serializer": "FirstModelRelationsSerializer",
+          "path": "myfirstmodel"
+        },
+        {
+          "endpoint_type": "simple_data_access",
+          "model": "MySecondModel",
+          "serializer": "MySecondSerializerRelations",
+          "path": "seconds",
+          "actions": [
+            {
+              "endpoint_type": "nested_foreign_simple_data_access",
+              "path": "second-firsts",
+              "serializer": "MyFirstModelSerializer",
+              "model": "MyFirstModel",
+              "parent_field": "second"
+            },
+            {
+              "endpoint_type": "nested_many_simple_data_access",
+              "path": "nested_thirds",
+              "serializer": "TheThirdSerializer",
+              "model": "TheThird",
+              "parent_field": "second_set"
+            },
+            {
+              "endpoint_type": "add_relation",
+              "path": "add-third",
+              "model": "TheThird",
+              "parent_field": "third_set"
+            },
+            {
+              "endpoint_type": "remove_relation",
+              "path": "remove-third",
+              "model": "TheThird",
+              "parent_field": "third_set"
+            }
+          ]
+        },
+        {
+          "endpoint_type": "simple_data_access",
+          "model": "TheThird",
+          "serializer": "TheThirdSerializer",
+          "path": "thirds"
+        }
+      ]
+    }
+  ]
+}
