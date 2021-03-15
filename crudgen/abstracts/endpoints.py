@@ -76,7 +76,6 @@ class BaseAddToManyRelationEndpoint(AbstractBaseEndpoint, ABC):
 
     def assign_app(self, app):
         self.app = app
-        self.model = app.get_model(self.model)
 
     @classmethod
     def validate_data(cls, data: dict):
